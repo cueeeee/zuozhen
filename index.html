@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>擦出左鎮｜疊印路線</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:rgba(250,246,238,.9); --paper-solid:#FAF6EE;
+  --ink:#2A2925; --muted:#5E5A50; --line:rgba(42,41,37,.16);
+  --seal:#B3322B; --old:#2F4B8F; --gg:#3D7A4B;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:rgba(30,30,28,.88); --paper-solid:#1E1E1C;
+    --ink:#F1ECE1; --muted:#BDB6A7; --line:rgba(241,236,225,.18);
+    --seal:#D9534A; --old:#7F9BE0; --gg:#7DBB8B;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:rgba(30,30,28,.88); --paper-solid:#1E1E1C;
+  --ink:#F1ECE1; --muted:#BDB6A7; --line:rgba(241,236,225,.18);
+  --seal:#D9534A; --old:#7F9BE0; --gg:#7DBB8B;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; color:var(--ink);
+  background:linear-gradient(180deg,#8FA9C0 0%,#C9CED0 45%,#EBD7BC 100%) fixed;
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  line-height:1.7; -webkit-font-smoothing:antialiased;
+}
+#scene{position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0}
+#labels{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden}
+.pin{position:absolute; left:0; top:0; transform:translate(-50%,-100%); display:flex; align-items:center; gap:6px;
+  white-space:nowrap; font-size:13px; font-weight:700; color:#2A2925; transition:opacity .3s}
+.pin .n{width:22px; height:22px; display:grid; place-items:center; background:#FAF6EE; color:var(--seal);
+  border:2px solid var(--seal); border-radius:3px; font-family:"Noto Serif TC",serif; font-size:12px}
+.pin .t{background:rgba(250,246,238,.92); padding:1px 8px; border-radius:3px; display:none}
+.pin.focus .t{display:block}
+.pin.focus .n{background:var(--seal); color:#fff; transform:scale(1.2)}
+
+header{
+  position:fixed; z-index:6; left:0; right:0; top:0;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) clamp(14px,4vw,40px) 12px;
+  display:flex; justify-content:space-between; align-items:center; gap:12px; pointer-events:none;
+}
+.brand{font-family:"Noto Serif TC",serif; font-weight:900; font-size:19px; letter-spacing:.12em; pointer-events:auto;
+  display:flex; align-items:center; gap:8px}
+.brand i{display:inline-grid; place-items:center; width:26px; height:26px; border:2px solid var(--seal); color:var(--seal);
+  font-style:normal; font-size:13px; border-radius:3px; background:var(--paper-solid)}
+.switch{pointer-events:auto; display:flex; background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:3px;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+.switch button{border:0; background:transparent; color:var(--muted); font:inherit; font-size:14px; font-weight:700;
+  padding:6px 14px; border-radius:999px; cursor:pointer}
+.switch button[aria-pressed="true"]{color:#fff}
+.switch button[data-r="oldstreet"][aria-pressed="true"]{background:var(--old)}
+.switch button[data-r="gongguan"][aria-pressed="true"]{background:var(--gg)}
+.switch button:focus-visible,.btn:focus-visible{outline:3px solid var(--seal); outline-offset:2px}
+
+main{position:relative; z-index:2}
+section{min-height:100vh; display:flex; align-items:center; padding:14vh clamp(16px,6vw,96px)}
+section.r{justify-content:flex-end}
+.panel{max-width:27rem; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:24px 26px 26px;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 12px 40px rgba(40,30,20,.12)}
+h1,h2,h3{font-family:"Noto Serif TC","Songti TC",serif; margin:0; line-height:1.3}
+h1{font-size:clamp(48px,10vw,104px); font-weight:900; letter-spacing:.08em}
+h2{font-size:clamp(25px,3.4vw,34px); font-weight:900; margin-bottom:10px}
+p{margin:0; color:var(--muted); font-size:16px}
+p+p{margin-top:10px}
+
+.hero{align-items:flex-start; padding-top:18vh}
+.hero .lead{font-size:clamp(17px,2vw,21px); color:var(--ink); max-width:24rem; margin-top:12px}
+.hero h1{color:#2A2925; text-shadow:0 2px 30px rgba(255,248,235,.8)}
+.hero .lead{color:#3A3832; text-shadow:0 1px 18px rgba(255,248,235,.9)}
+.cue{margin-top:24px; font-size:14px; color:#3A3832; display:flex; gap:10px; align-items:center}
+.cue span{width:2px; height:36px; background:rgba(42,41,37,.35); position:relative; overflow:hidden}
+.cue span::after{content:""; position:absolute; left:0; top:-12px; width:2px; height:12px; background:var(--seal); animation:cue 1.6s infinite}
+@keyframes cue{to{top:36px}}
+
+ol.how{list-style:none; padding:0; margin:14px 0 0; counter-reset:h}
+ol.how li{counter-increment:h; display:grid; grid-template-columns:30px 1fr; gap:12px; padding:10px 0; border-top:1px solid var(--line)}
+ol.how li::before{content:counter(h); width:26px; height:26px; display:grid; place-items:center; border:2px solid var(--seal);
+  color:var(--seal); border-radius:3px; font-family:"Noto Serif TC",serif; font-weight:900; font-size:14px; margin-top:2px}
+ol.how b{display:block; color:var(--ink)}
+ol.how span{color:var(--muted); font-size:15px}
+
+.routes{display:grid; gap:10px; margin-top:16px}
+.btn{display:flex; justify-content:space-between; align-items:center; gap:12px; width:100%; text-align:left; font:inherit;
+  border:2px solid var(--line); background:transparent; color:var(--ink); padding:12px 14px; border-radius:6px; cursor:pointer}
+.btn small{color:var(--muted); font-size:13px}
+.btn b{font-size:17px}
+.btn[aria-pressed="true"][data-r="oldstreet"]{border-color:var(--old)}
+.btn[aria-pressed="true"][data-r="gongguan"]{border-color:var(--gg)}
+.dot{width:12px; height:12px; border-radius:50%; flex:none}
+
+.station .head{display:flex; gap:14px; align-items:center; margin-bottom:12px}
+.seal{width:54px; height:54px; flex:none; display:grid; place-items:center; border:3px solid var(--seal); color:var(--seal);
+  border-radius:4px; font-family:"Noto Serif TC",serif; font-weight:900; font-size:24px; transform:rotate(-4deg);
+  box-shadow:inset 0 0 0 3px var(--paper-solid), inset 0 0 0 4px var(--seal)}
+.tag{font-size:13px; font-weight:700}
+.station h2{margin:0}
+.todo{display:inline-block; font-size:12px; font-weight:700; color:var(--seal); border:1px dashed var(--seal); border-radius:3px; padding:0 6px; margin-left:6px; vertical-align:2px}
+.tip{margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:14px; color:var(--ink)}
+
+/* QR arrival sheet */
+.sheet-wrap{position:fixed; inset:0; z-index:10; display:none; align-items:flex-end; justify-content:center;
+  background:rgba(30,25,20,.35)}
+.sheet-wrap.open{display:flex}
+.sheet{width:min(560px,100%); background:var(--paper-solid); border-radius:14px 14px 0 0; padding:22px 24px calc(24px + env(safe-area-inset-bottom,0px));
+  max-height:85vh; overflow:auto; animation:up .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(40px); opacity:0}}
+.sheet .here{font-size:14px; color:var(--seal); font-weight:700; margin-bottom:8px}
+.sheet .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+.sheet .actions button{font:inherit; font-weight:700; font-size:15px; padding:11px 18px; border-radius:6px; cursor:pointer}
+.primary{background:var(--seal); color:#fff; border:0}
+.ghost{background:transparent; color:var(--ink); border:2px solid var(--line)}
+.next{margin-top:14px; font-size:15px; color:var(--ink)}
+
+header{transition:background .3s, box-shadow .3s}
+header.solid{background:var(--paper); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 1px 0 var(--line); pointer-events:auto}
+.hero > div{position:relative}
+.hero > div::before{content:""; position:absolute; inset:-14% -18%; z-index:-1;
+  background:radial-gradient(closest-side, rgba(236,232,224,.75), rgba(236,232,224,0)); pointer-events:none}
+
+/* large screens: give the panels a bit more presence */
+@media (min-width:1400px){
+  .panel{max-width:31rem; padding:30px 32px 32px}
+  p{font-size:17px}
+  .pin{font-size:14px}
+}
+@media (min-width:900px) and (min-height:560px){ .sheet-wrap{align-items:center} .sheet{border-radius:14px} }
+
+/* portrait phones and tablets: panels sit at the bottom so the 3D station stays visible above */
+@media (orientation:portrait) and (max-width:1024px){
+  section{align-items:flex-end; padding:10vh clamp(14px,5vw,48px) 6vh}
+  section.r{justify-content:flex-start}
+  .hero{align-items:flex-start; padding-top:15vh}
+  .panel{max-width:34rem; width:100%}
+}
+@media (max-width:720px){
+  .panel{padding:18px 18px 20px}
+  .switch button{padding:6px 10px; font-size:13px}
+  .brand{font-size:16px}
+  h2{font-size:24px}
+  p{font-size:15px}
+  .seal{width:46px; height:46px; font-size:20px}
+  ol.how li{padding:8px 0}
+  ol.how span{font-size:14px}
+}
+@media (max-width:360px){
+  .brand span.full{display:none}
+  .switch button{padding:5px 8px; font-size:12px}
+  h1{letter-spacing:.04em}
+}
+
+/* phones in landscape: very little height to work with */
+@media (orientation:landscape) and (max-height:500px){
+  header{padding:calc(env(safe-area-inset-top,0px) + 6px) max(14px, env(safe-area-inset-right,0px)) 6px max(14px, env(safe-area-inset-left,0px))}
+  section{min-height:100vh; align-items:center; padding:56px max(16px, env(safe-area-inset-right,0px)) 16px max(16px, env(safe-area-inset-left,0px))}
+  section.r{justify-content:flex-end}
+  .hero{align-items:center; padding-top:40px}
+  h1{font-size:44px}
+  .hero .lead{font-size:15px; margin-top:6px; max-width:22rem}
+  .cue{margin-top:12px}
+  .panel{max-width:24rem; padding:14px 16px 16px}
+  h2{font-size:20px; margin-bottom:6px}
+  p{font-size:14px; line-height:1.6}
+  .seal{width:40px; height:40px; font-size:18px; border-width:2px}
+  .station .head{margin-bottom:6px; gap:10px}
+  .tip{margin-top:8px; padding-top:8px; font-size:13px}
+  section[data-cam="how"] .panel{max-width:46rem}
+  ol.how{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:8px}
+  ol.how li{grid-template-columns:1fr; gap:6px; padding:8px 0 0}
+  ol.how span{font-size:13px; line-height:1.55}
+  .routes{grid-template-columns:1fr 1fr; margin-top:10px}
+  .btn{padding:8px 10px}
+  .sheet-wrap{align-items:center}
+  .sheet{border-radius:12px; width:min(620px,92vw); max-height:92vh; padding:14px 18px 16px}
+  .sheet .actions{margin-top:10px}
+  .sheet .next{margin-top:8px}
+}
+@media (prefers-reduced-motion: reduce){ .cue span::after{animation:none} .sheet{animation:none} }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="labels" aria-hidden="true"></div>
+
+<header>
+  <div class="brand"><i>擦</i><span class="full">擦出左鎮</span></div>
+  <div class="switch" role="group" aria-label="選擇路線">
+    <button data-r="oldstreet" aria-pressed="true">老街線</button>
+    <button data-r="gongguan" aria-pressed="false">公舘社區線</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero" data-cam="hero">
+    <div>
+      <h1>擦出左鎮</h1>
+      <p class="lead">雲海散開，惡地之間藏著十四個站。一站蓋一個章，章會一層一層疊成一張圖。</p>
+      <div class="cue"><span></span>往下捲，從雲上飛進左鎮</div>
+    </div>
+  </section>
+
+  <section class="r" data-cam="how">
+    <div class="panel">
+      <h2>怎麼玩</h2>
+      <ol class="how">
+        <li><div><b>到旅遊售票處拿地圖和闖關卡</b><span>地圖上有各站的商家和景點資訊。遮色闖關卡跟明信片一樣大，蓋在地圖上就能解謎。</span></div></li>
+        <li><div><b>解謎找站，蓋疊印印章</b><span>每一站一個章，蓋在同一張卡上會疊出完整圖案。每站都有 QR code，掃了就能看這站的介紹。</span></div></li>
+        <li><div><b>最後一站寄時光明信片</b><span>一張 $10。寫給未來的自己或朋友，信件會存放在最後一站。</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section data-cam="overview">
+    <div class="panel">
+      <h2>兩條路線，選一條走</h2>
+      <p>兩條線各 11 站，前 8 站一樣，從第 9 站開始分開，總共 14 站。</p>
+      <div class="routes">
+        <button class="btn" data-r="oldstreet" aria-pressed="true"><span><b>老街線</b><br><small>左達商號、鹹粿、左食堂</small></span><span class="dot" style="background:var(--old)"></span></button>
+        <button class="btn" data-r="gongguan" aria-pressed="false"><span><b>公舘社區線</b><br><small>岡林教會、水管屋、發展協會</small></span><span class="dot" style="background:var(--gg)"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="stations"></div>
+
+  <section class="r" data-cam="end">
+    <div class="panel">
+      <h2>寄一張給未來</h2>
+      <p>走到第 11 站，把時光明信片投進去，一張 $10。到了約定的時間，它會寄到你寫的地址。</p>
+      <p>章蓋齊了嗎？翻過闖關卡看看，十一個章疊出來的就是左鎮。</p>
+    </div>
+  </section>
+</main>
+
+<div class="sheet-wrap" id="sheetWrap" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ================================================================
+   內容資料：要改文字只改這裡。
+   pos 是 3D 場景上的示意位置，不是實際地理座標。
+   QR code 網址：在網頁連結後面加 ?s=站代號，例如 ?s=church
+   ================================================================ */
+const STATIONS = {
+  ticket:  {name:'旅遊售票處', pos:[-64,50], desc:'兩條路線的起點。先在這裡拿地圖和遮色闖關卡，蓋下第一個章。', todo:false},
+  hall1:   {name:'一館', pos:[-54,44], desc:'展館介紹待補。', todo:true},
+  hall2:   {name:'二館', pos:[-49,47], desc:'展館介紹待補。', todo:true},
+  hall3:   {name:'三館', pos:[-44,43], desc:'展館介紹待補。', todo:true},
+  hall4:   {name:'四館', pos:[-39,46], desc:'展館介紹待補。', todo:true},
+  hall5:   {name:'五館', pos:[-34,41], desc:'展館介紹待補。', todo:true},
+  tantan:  {name:'探探館', pos:[-22,32], desc:'介紹待補。', todo:true},
+  farm:    {name:'農會驛站', pos:[-8,20], desc:'左鎮農會的農特產展售點，可以買在地農產和伴手禮。兩條路線在這裡分開。', todo:false},
+  zuoda:   {name:'老街小店・左達商號', pos:[4,4], desc:'老街上的小店。介紹待補。', todo:true},
+  kue:     {name:'鹹粿', pos:[14,-8], desc:'老街小吃。介紹待補。', todo:true},
+  canteen: {name:'左食堂', pos:[26,-20], desc:'老街線的最後一站。時光明信片寄放在這裡。', todo:false},
+  church:  {name:'岡林教會', pos:[8,30], desc:'介紹待補。', todo:true},
+  pipe:    {name:'岡林國小水管屋', pos:[22,38], desc:'介紹待補。', todo:true},
+  assoc:   {name:'發展協會', pos:[36,30], desc:'公舘社區線的最後一站。時光明信片寄放在這裡。', todo:false}
+};
+const SHARED = ['ticket','hall1','hall2','hall3','hall4','hall5','tantan','farm'];
+const ROUTES = {
+  oldstreet:{name:'老街線', cssVar:'--old', hex:'#2F4B8F', ids:[...SHARED,'zuoda','kue','canteen']},
+  gongguan: {name:'公舘社區線', cssVar:'--gg', hex:'#3D7A4B', ids:[...SHARED,'church','pipe','assoc']}
+};
+
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lite = Math.min(innerWidth, innerHeight) < 600;            // phones get fewer trees
+const C = h => new THREE.Color(h).convertSRGBToLinear();
+const V3 = THREE.Vector3;
+
+/* ---------- noise ---------- */
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry(20260); const perm = new Uint8Array(512);
+{const p=[...Array(256).keys()]; for(let i=255;i>0;i--){const j=Math.floor(rnd()*(i+1));[p[i],p[j]]=[p[j],p[i]]} for(let i=0;i<512;i++)perm[i]=p[i&255];}
+const F2=.5*(Math.sqrt(3)-1), G2=(3-Math.sqrt(3))/6, GR=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+function noise(x,y){
+  const s=(x+y)*F2, i=Math.floor(x+s), j=Math.floor(y+s), t=(i+j)*G2;
+  const x0=x-(i-t), y0=y-(j-t), i1=x0>y0?1:0, j1=1-i1;
+  const x1=x0-i1+G2, y1=y0-j1+G2, x2=x0-1+2*G2, y2=y0-1+2*G2, ii=i&255, jj=j&255;
+  let n=0, g;
+  let t0=.5-x0*x0-y0*y0; if(t0>0){g=GR[perm[ii+perm[jj]]&7]; t0*=t0; n+=t0*t0*(g[0]*x0+g[1]*y0)}
+  let t1=.5-x1*x1-y1*y1; if(t1>0){g=GR[perm[ii+i1+perm[jj+j1]]&7]; t1*=t1; n+=t1*t1*(g[0]*x1+g[1]*y1)}
+  let t2=.5-x2*x2-y2*y2; if(t2>0){g=GR[perm[ii+1+perm[jj+1]]&7]; t2*=t2; n+=t2*t2*(g[0]*x2+g[1]*y2)}
+  return 70*n;
+}
+const fbm=(x,y,o)=>{let a=.5,f=1,s=0;for(let k=0;k<o;k++){s+=a*noise(x*f,y*f);f*=2;a*=.5}return s};
+const ridged=(x,y,o)=>{let a=.5,f=1,s=0;for(let k=0;k<o;k++){const v=1-Math.abs(noise(x*f,y*f));s+=a*v*v;f*=2.1;a*=.5}return s};
+
+/* ---------- route paths (2D) ---------- */
+function path2D(ids, per){
+  const c = new THREE.CatmullRomCurve3(ids.map(id=>new V3(STATIONS[id].pos[0],0,STATIONS[id].pos[1])),false,'centripetal');
+  return c.getSpacedPoints(Math.max(40, Math.round(c.getLength()/(per||.8))));
+}
+const trunk2 = path2D(SHARED), old2 = path2D(['farm','zuoda','kue','canteen']), gg2 = path2D(['farm','church','pipe','assoc']);
+const allPts = [...trunk2,...old2,...gg2];
+function nearest(x,z){ let d=1e9, best=allPts[0]; for(const p of allPts){const q=(x-p.x)**2+(z-p.z)**2; if(q<d){d=q;best=p}} return {d:Math.sqrt(d), p:best}; }
+const distAt=(x,z)=>nearest(x,z).d;
+
+/* ---------- terrain grid ---------- */
+const SIZE=300, SEG=lite?250:320, CX=-14, CZ=12, N1=SEG+1, cell=SIZE/SEG;
+const H=new Float32Array(N1*N1), D=new Float32Array(N1*N1), GUL=new Float32Array(N1*N1);
+for(let r=0;r<N1;r++) for(let c=0;c<N1;c++){
+  const x=CX-SIZE/2+c*cell, z=CZ-SIZE/2+r*cell;
+  let d=1e9; for(let k=0;k<allPts.length;k+=2){const p=allPts[k], q=(x-p.x)**2+(z-p.z)**2; if(q<d)d=q} d=Math.sqrt(d);
+  const base=fbm(x*.011,z*.011,4)*5+3, ridge=ridged(x*.024+11,z*.024-3,5), gully=ridged(x*.085+40,z*.085,3);
+  let h=base+ridge*13+gully*1.6;
+  const floor=2.2+fbm(x*.03,z*.03,2)*1.0;
+  const w=THREE.MathUtils.smoothstep(d,5,26);
+  h=floor+(h-floor)*w*w;
+  const k=r*N1+c; H[k]=h; D[k]=d; GUL[k]=gully;
+}
+function heightAt(x,z){
+  const fc=(x-(CX-SIZE/2))/cell, fr=(z-(CZ-SIZE/2))/cell;
+  const c=Math.max(0,Math.min(SEG-1,Math.floor(fc))), r=Math.max(0,Math.min(SEG-1,Math.floor(fr)));
+  const u=fc-c, v=fr-r, k=r*N1+c;
+  return (H[k]*(1-u)+H[k+1]*u)*(1-v)+(H[k+N1]*(1-u)+H[k+N1+1]*u)*v;
+}
+const gradAt=(x,z)=>{const e=1.2;return Math.hypot(heightAt(x+e,z)-heightAt(x-e,z),heightAt(x,z+e)-heightAt(x,z-e))/(2*e)};
+
+/* ---------- renderer & lights ---------- */
+const canvas=document.getElementById('scene');
+const renderer=new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio, lite?1.6:1.75));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=.98;
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+scene.fog=new THREE.Fog(C('#E3D6C2'),90,330);
+const camera=new THREE.PerspectiveCamera(45,1,.3,900);
+scene.add(new THREE.HemisphereLight(C('#D3E2EE'),C('#6E5E48'),.55));
+const sun=new THREE.DirectionalLight(C('#FFE2BC'),1.65);
+const sunOffset=new V3(95,70,-50);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-75,right:75,top:75,bottom:-75,near:5,far:300});
+sun.shadow.bias=-0.0006; sun.shadow.normalBias=.04;
+scene.add(sun,sun.target);
+
+/* ---------- terrain mesh with fine erosion rills ---------- */
+function rillNormalMap(){
+  const S=256, hm=new Float32Array(S*S);
+  const f=(x,y)=>{const r=1-Math.abs(noise(x*.045,y*.19)); return .65*r*r*r+.35*noise(x*.11+9,y*.11);};
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){            // blend four shifted samples so the tile wraps
+    const a=x/S, b=y/S;
+    hm[y*S+x]=f(x,y)*(1-a)*(1-b)+f(x-S,y)*a*(1-b)+f(x,y-S)*(1-a)*b+f(x-S,y-S)*a*b;
+  }
+  const cv=document.createElement('canvas'); cv.width=cv.height=S; const ctx=cv.getContext('2d'), img=ctx.createImageData(S,S);
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){
+    const L=hm[y*S+(x+S-1)%S], R=hm[y*S+(x+1)%S], U=hm[((y+S-1)%S)*S+x], Dn=hm[((y+1)%S)*S+x];
+    let nx=(L-R)*3.2, ny=(U-Dn)*3.2, nz=1; const l=Math.hypot(nx,ny,nz); nx/=l; ny/=l; nz/=l;
+    const i=(y*S+x)*4; img.data[i]=(nx*.5+.5)*255; img.data[i+1]=(ny*.5+.5)*255; img.data[i+2]=(nz*.5+.5)*255; img.data[i+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  const t=new THREE.CanvasTexture(cv); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(SIZE/6,SIZE/6);
+  t.anisotropy=renderer.capabilities.getMaxAnisotropy(); return t;
+}
+{
+  const geo=new THREE.PlaneGeometry(SIZE,SIZE,SEG,SEG), pos=geo.attributes.position, cols=new Float32Array(pos.count*3);
+  const cGrassD=C('#4C6838'), cGrassL=C('#7A8F50'), cMud=C('#CBC2AE'), cMudS=C('#958972'), cField=C('#A7A470'), cSide=C('#B9AC88');
+  const a=new THREE.Color(), b=new THREE.Color();
+  for(let i=0;i<pos.count;i++){
+    const c=i%N1, r=Math.floor(i/N1), k=r*N1+c; pos.setZ(i,H[k]);
+    const x=CX-SIZE/2+c*cell, z=CZ-SIZE/2+r*cell;
+    const g=(c>0&&c<SEG&&r>0&&r<SEG)?Math.hypot(H[k+1]-H[k-1],H[k+N1]-H[k-N1])/(2*cell):0;
+    const mud=THREE.MathUtils.smoothstep(g,.42,.9), v=fbm(x*.08,z*.08,2)*.5+.5;
+    a.copy(cGrassD).lerp(cGrassL,v);
+    b.copy(cMud).lerp(cMudS,Math.min(1,GUL[k]*.9+(1-v)*.35)); a.lerp(b,mud);
+    const near=1-THREE.MathUtils.smoothstep(D[k],3,16);
+    if(near>0){ b.copy(D[k]<5?cSide:cField); a.lerp(b,near*.7); }
+    cols[i*3]=a.r; cols[i*3+1]=a.g; cols[i*3+2]=a.b;
+  }
+  geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
+  geo.rotateX(-Math.PI/2); geo.translate(CX,0,CZ); geo.computeVertexNormals();
+  const terrain=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true, roughness:1, metalness:0, normalMap:rillNormalMap(), normalScale:new THREE.Vector2(1.1,1.1)}));
+  terrain.receiveShadow=terrain.castShadow=true; scene.add(terrain);
+}
+
+/* ---------- model kit: parts baked into one geometry with vertex colours ---------- */
+function part(g,hex,x=0,y=0,z=0,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1,ao=0){
+  const geo=g.index?g.toNonIndexed():g.clone();
+  geo.applyMatrix4(new THREE.Matrix4().compose(new V3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)),new V3(sx,sy,sz)));
+  const pa=geo.attributes.position, n=pa.count, c=new Float32Array(n*3), col=C(hex);
+  let y0=Infinity,y1=-Infinity; if(ao) for(let i=0;i<n;i++){const v=pa.getY(i); if(v<y0)y0=v; if(v>y1)y1=v;}
+  for(let i=0;i<n;i++){ const f=ao?(1-ao)+ao*((pa.getY(i)-y0)/((y1-y0)||1)):1; c[i*3]=col.r*f; c[i*3+1]=col.g*f; c[i*3+2]=col.b*f; }
+  const out=new THREE.BufferGeometry(); out.setAttribute('position',pa); out.setAttribute('normal',geo.attributes.normal); out.setAttribute('color',new THREE.BufferAttribute(c,3));
+  return out;
+}
+function merge(parts){
+  let n=0; for(const p of parts) n+=p.attributes.position.count;
+  const P=new Float32Array(n*3), N=new Float32Array(n*3), K=new Float32Array(n*3); let o=0;
+  for(const p of parts){ P.set(p.attributes.position.array,o*3); N.set(p.attributes.normal.array,o*3); K.set(p.attributes.color.array,o*3); o+=p.attributes.position.count; }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(P,3)); g.setAttribute('normal',new THREE.BufferAttribute(N,3)); g.setAttribute('color',new THREE.BufferAttribute(K,3));
+  g.computeBoundingSphere(); g.computeBoundingBox(); return g;
+}
+const Bx=(w,h,d)=>new THREE.BoxGeometry(w,h,d), Cy=(a,b,h,s=8,open=false)=>new THREE.CylinderGeometry(a,b,h,s,1,open), Sp=(r,a=12,b=8)=>new THREE.SphereGeometry(r,a,b);
+function gable(len,width,height){            // triangular roof prism along x, base at y=0
+  const g=new THREE.CylinderGeometry(1,1,len,3,1,false,Math.PI/2); g.rotateZ(Math.PI/2);
+  g.scale(1,height/1.5,width/1.732); g.translate(0,height/3,0); return g;
+}
+function blob(r,seed,detail=1){
+  const g=new THREE.IcosahedronGeometry(r,detail), p=g.attributes.position, v=new V3();
+  for(let i=0;i<p.count;i++){ v.fromBufferAttribute(p,i); const k=1+.24*noise(v.x*2.1+seed,v.y*2.1+v.z*1.7)+.1*noise(v.z*4+seed,v.x*4); v.multiplyScalar(k); p.setXYZ(i,v.x,v.y,v.z); }
+  return g;
+}
+const mat=new THREE.MeshStandardMaterial({vertexColors:true, roughness:.82, metalness:0});
+const matDS=new THREE.MeshStandardMaterial({vertexColors:true, roughness:.85, metalness:0, side:THREE.DoubleSide});
+const GLASS='#2C3A45', FRAME='#BDB6AA';
+
+/* vegetation */
+function broadleaf(seed,leaf){
+  const parts=[part(Cy(.07,.13,1.3,6),'#5E4836',0,.65,0), part(Cy(.03,.05,.7,5),'#5E4836',.18,1.2,.05,0,0,-.7)];
+  [[0,1.85,0,.88],[.45,1.5,.2,.62],[-.42,1.55,-.22,.64],[-.1,2.3,.12,.52]].forEach(([x,y,z,r],k)=>parts.push(part(blob(r,seed+k*3.1),leaf,x,y,z,0,0,0,1,.88,1,.5)));
+  return merge(parts);
+}
+function betel(){
+  const parts=[part(Cy(.04,.06,3.6,6),'#A29C84',0,1.8,0)];
+  for(let k=0;k<3;k++) parts.push(part(Cy(.065,.065,.04,6),'#8B8670',0,.8+k*.9,0));
+  for(let k=0;k<10;k++){ const a=k/10*Math.PI*2+.3, tilt=1.05+(k%3)*.18;
+    const leaf=new THREE.ConeGeometry(.2,1.7,4); leaf.translate(0,.85,0);
+    parts.push(part(leaf,k%2?'#5E8034':'#6B8C3A',0,3.55,0,0,a,tilt,1,1,.28,.35)); }
+  parts.push(part(new THREE.ConeGeometry(.12,.7,5),'#7A9A40',0,3.85,0));
+  parts.push(part(Sp(.16,6,5),'#C59A2E',.08,3.35,.06));            // nut bunch
+  return merge(parts);
+}
+function bamboo(seed){
+  const r=mulberry(seed), parts=[];
+  for(let k=0;k<11;k++){ const a=r()*6.28, d=.3*r(), lean=.06+.16*r(), h=3.2+1.4*r();
+    const cul=Cy(.035,.05,h,5); cul.translate(0,h/2,0); parts.push(part(cul,k%3?'#8EA54F':'#A2AE5C',Math.cos(a)*d,0,Math.sin(a)*d,0,a,lean)); }
+  for(let k=0;k<6;k++){ const a=k/6*6.28; parts.push(part(blob(.55+.15*r(),seed+k),'#6D8C3B',Math.cos(a)*.65,3.1+r()*.9,Math.sin(a)*.65,0,0,0,1.2,.75,1.2,.45)); }
+  return merge(parts);
+}
+/* houses (front faces +z) */
+function townhouse(floors){
+  const h=floors*1.05, parts=[part(Bx(2,h,2.4),'#E6E0D4',0,h/2,0)];
+  for(let f=0;f<floors;f++){ const y=f*1.05;
+    if(f===0){ parts.push(part(Bx(1.45,.78,.04),'#8E9399',0,.42,1.215)); for(let s=0;s<6;s++) parts.push(part(Bx(1.45,.015,.05),'#7A7F86',0,.12+s*.13,1.23)); }
+    else { parts.push(part(Bx(1.3,.48,.04),GLASS,0,y+.56,1.215), part(Bx(1.42,.06,.07),FRAME,0,y+.3,1.23), part(Bx(.04,.48,.05),FRAME,0,y+.56,1.23));
+      parts.push(part(Bx(2.04,.06,.32),'#C9C2B5',0,y+.03,1.36), part(Bx(2.04,.32,.03),'#9A9488',0,y+.2,1.51)); }
+  }
+  parts.push(part(Bx(2.06,.2,2.46),'#C4BDB0',0,h+.1,0));
+  parts.push(part(Bx(1.6,.5,1.3),'#7FA0B8',0,h+.45,-.35), part(gable(1.7,1.5,.42),'#3F6F9C',0,h+.7,-.35));
+  parts.push(part(Cy(.25,.25,.45,12),'#D3D3CF',.68,h+.43,.7), part(Bx(.5,.3,.25),'#E8E8E4',-1.12,1.3,.4));
+  return merge(parts);
+}
+function brickHouse(){
+  return merge([
+    part(Bx(3.1,.14,1.9),'#8E8A80',0,.07,0), part(Bx(3,1.2,1.7),'#A3533C',0,.74,0),
+    part(gable(3.4,2.15,.8),'#5E3328',0,1.34,0), part(Bx(3.45,.09,.14),'#47271F',0,2.12,0),
+    part(Bx(.55,.85,.04),'#4C3424',0,.57,.86), part(Bx(.5,.38,.04),'#2B2420',-.95,.85,.86), part(Bx(.5,.38,.04),'#2B2420',.95,.85,.86),
+    part(Bx(.6,.05,.08),'#C9B9A0',-.95,.65,.89), part(Bx(.6,.05,.08),'#C9B9A0',.95,.65,.89)
+  ]);
+}
+function tinShed(){
+  return merge([ part(Bx(3,1.5,2.2),'#7A98AA',0,.75,0), part(gable(3.15,2.45,.5),'#9DB2BE',0,1.5,0),
+    part(Bx(1.3,1.15,.04),'#5C6E78',0,.6,1.11), ...[0,1,2,3,4,5,6].map(s=>part(Bx(.02,1.5,.03),'#6A8697',-1.4+s*.47,.75,1.115)) ]);
+}
+function shophouse(wall,sign,extra){
+  const parts=[
+    part(Bx(1.4,1.25,2.4),wall,0,1.85,0), part(Bx(1.4,1.25,1.85),'#CFC5B3',0,.62,-.28),
+    part(Bx(.13,1.25,.13),wall,-.64,.62,1.13), part(Bx(.13,1.25,.13),wall,.64,.62,1.13),
+    part(Bx(1.1,.95,.04),'#3A3530',0,.5,.66), part(Bx(.75,.55,.04),GLASS,0,1.9,1.215), part(Bx(.85,.06,.07),FRAME,0,1.6,1.23),
+    part(Bx(1.44,.42,.12),wall,0,2.68,1.15), part(Sp(.18,10,6),wall,0,2.9,1.15,0,0,0,1,.6,.5),
+    part(Bx(1.4,.08,2.4),'#8A857C',0,2.5,0), part(Bx(.08,.95,.42),sign,.62,1.75,1.4),
+    part(Sp(.13,10,8),'#C7322A',-.45,1.08,1.06,0,0,0,1,1.25,1), part(Bx(.02,.12,.02),'#3A3530',-.45,1.28,1.06)
+  ];
+  if(extra==='awning') parts.push(part(Bx(1.5,.05,.7),sign,0,1.2,1.45,-.25));
+  if(extra==='stall') parts.push(part(Bx(1,.45,.5),'#8A5A3C',0,.23,1.55), part(Bx(.9,.04,.4),'#E8E2D4',0,.47,1.55), part(Cy(.18,.18,.12,12),'#BFB6A6',-.2,.55,1.55), part(Bx(1.5,.05,.8),sign,0,1.22,1.5,-.22));
+  if(extra==='wood') parts.push(part(Bx(1.12,.97,.06),'#8B6A4A',0,.5,.7), ...[0,1,2,3].map(s=>part(Bx(.03,.97,.07),'#6E5238',-.42+s*.28,.5,.72)));
+  return merge(parts);
+}
+/* landmarks */
+function ticketOffice(){
+  return merge([ part(Bx(2.8,.12,2),'#BDB5A6',0,.06,0), part(Bx(2.6,1.3,1.6),'#EEE8DB',0,.77,0),
+    part(Bx(1.9,.55,.04),GLASS,-.2,.9,.81), part(Bx(.6,.95,.04),'#5A6772',.95,.6,.81),
+    part(Bx(3.1,.12,2.2),'#3E4B57',0,1.5,.05,.1), part(Bx(.08,1.7,.08),'#4A4A4A',1.75,.85,1.05), part(Bx(1,.55,.06),'#B3322B',1.75,1.55,1.05),
+    part(Bx(1.1,.07,.32),'#8A5A3C',-.75,.38,1.25), part(Bx(.06,.3,.3),'#5A3E2A',-1.2,.2,1.25), part(Bx(.06,.3,.3),'#5A3E2A',-.3,.2,1.25) ]);
+}
+function hall(w,d,h,roof,accent){
+  const parts=[ part(Bx(w+.4,.15,d+.4),'#BDB5A6',0,.08,0), part(Bx(w,h,d),'#DAD5CA',0,h/2+.15,0),
+    part(Bx(w+.02,h*.32,d+.02),GLASS,0,h*.55+.15,0), part(Bx(w*.35,h*.6,.5),accent,-w*.22,h*.3+.15,d/2+.25),
+    part(Bx(w*.5,.08,1.1),'#9C978C',-w*.22,h*.62+.15,d/2+.5) ];
+  if(roof==='vault'){ const v=new THREE.CylinderGeometry(d/2+.1,d/2+.1,w+.2,20,1,false,0,Math.PI); v.rotateZ(Math.PI/2); parts.push(part(v,'#A9B3B8',0,h+.15,0,0,0,0,1,.55,1)); }
+  else if(roof==='saw'){ for(let k=0;k<3;k++) parts.push(part(gable(d,w/3,.7),'#B7BEC2',-w/3+k*w/3,h+.15,0,0,Math.PI/2,0)); }
+  else parts.push(part(Bx(w+.12,.18,d+.12),'#BFB8AB',0,h+.24,0));
+  return merge(parts);
+}
+function dome(){
+  const dm=new THREE.SphereGeometry(1.9,28,12,0,Math.PI*2,0,Math.PI/2);
+  return merge([ part(Cy(2.3,2.3,.15,28),'#BDB5A6',0,.08,0), part(Cy(1.9,1.9,1.1,28),'#E6E0D3',0,.7,0), part(Cy(1.92,1.92,.32,28),GLASS,0,.85,0),
+    part(dm,'#B9C6CA',0,1.25,0), part(Cy(.25,.25,.3,10),'#8F9A9E',0,3.25,0), part(Bx(1.2,.95,1),'#E6E0D3',0,.62,1.85), part(Bx(.7,.7,.04),GLASS,0,.5,2.36) ]);
+}
+function farmStation(){
+  const parts=[ part(Bx(5.4,.14,3.4),'#BDB5A6',0,.07,0), part(Bx(5,1.5,2.4),'#E9E0CB',0,.89,-.3),
+    part(gable(5.5,3.6,.95),'#5C6B48',0,1.64,0), part(Bx(5.6,.08,.16),'#46523A',0,2.6,0),
+    part(Bx(3,.75,.04),GLASS,-.6,1,.91), part(Bx(.8,1.05,.04),'#5A4636',1.7,.68,.91), part(Bx(1.8,.42,.07),'#2F6E3E',0,2.05,1.3,-.55) ];
+  for(let k=0;k<4;k++) parts.push(part(Bx(.12,1.45,.12),'#7A5A40',-2.3+k*1.53,.85,1.45));
+  const fruit=['#E2B33C','#7DA040','#D9772E','#C9412E'];
+  for(let k=0;k<8;k++) parts.push(part(Bx(.42,.22,.3),'#9A7552',-1.9+(k%4)*.5,.26+Math.floor(k/4)*.24,1.95), part(Bx(.36,.06,.24),fruit[k%4],-1.9+(k%4)*.5,.4+Math.floor(k/4)*.24,1.95));
+  return merge(parts);
+}
+function church(){
+  const g=gable(4.4,2.9,1.35); g.rotateY(Math.PI/2);
+  const parts=[ part(Bx(3.2,.15,6.4),'#BDB5A6',0,.08,0), part(Bx(2.4,1.9,4.2),'#F3F0E9',0,1.1,-.7), part(g,'#7A3B2E',0,2.05,-.7),
+    part(Bx(1.3,3.5,1.3),'#F3F0E9',0,1.9,1.7), part(new THREE.ConeGeometry(1,1.9,4),'#7A3B2E',0,4.6,1.7,0,Math.PI/4,0),
+    part(Bx(.09,.8,.09),'#E9E2D0',0,5.9,1.7), part(Bx(.45,.09,.09),'#E9E2D0',0,6.05,1.7),
+    part(Bx(.6,1,.05),'#5A3A2A',0,.65,2.37), part(Sp(.3,10,6,0),'#5A3A2A',0,1.15,2.37,0,0,0,1,1,.15),
+    part(Cy(.32,.32,.05,16),GLASS,0,2.85,2.36,Math.PI/2), part(Bx(1.5,.12,.5),'#CFC8BA',0,.1,2.6) ];
+  for(let k=0;k<3;k++){ for(const s of [-1,1]) parts.push(part(Bx(.05,.85,.35),GLASS,s*1.22,1.25,-2.1+k*1.3), part(Sp(.18,8,5),GLASS,s*1.22,1.67,-2.1+k*1.3,0,0,0,.25,1,1)); }
+  return merge(parts);
+}
+function pipeSchool(){
+  const parts=[ part(Bx(7.4,.14,3),'#C7C0B2',0,.07,-3.4), part(Bx(7,2.2,1.6),'#EDE6D6',0,1.25,-3.6),
+    part(Bx(7.02,.5,.04),GLASS,0,.85,-2.79), part(Bx(7.02,.5,.04),GLASS,0,1.85,-2.79), part(Bx(7.1,.1,.5),'#CFC8BA',0,1.38,-2.55),
+    part(Bx(7.1,.35,.04),'#E0D9C9',0,1.6,-2.32), part(Bx(7.2,.16,1.9),'#BDB5A6',0,2.43,-3.55),
+    part(Cy(.04,.04,4,6),'#B9B9B9',3.2,2,-1.6), part(Bx(.8,.5,.02),'#C7322A',3.62,3.65,-1.6),
+    part(Cy(3.2,3.2,.05,36),'#B35E44',0,.04,1.6,0,0,0,1.7,1,1), part(Cy(2.5,2.5,.06,36),'#7C9A4E',0,.05,1.6,0,0,0,1.75,1,1) ];
+  const cols=['#E3B23C','#4F8FBF','#D9644A','#6BAA5A','#9B6FB0'];
+  for(let k=0;k<5;k++){ const x=-3.2+k*1.6;
+    parts.push(part(Cy(.72,.72,1.7,22,true),cols[k],x,.72,4.6,0,0,Math.PI/2), part(Cy(.64,.64,1.72,22,true),'#B9B4AA',x,.72,4.6,0,0,Math.PI/2)); }
+  return merge(parts);
+}
+function association(){
+  return merge([ part(Bx(3.4,.14,2.6),'#BDB5A6',0,.07,0), part(Bx(3,2.3,2.2),'#E6DFD0',0,1.29,0),
+    part(Bx(2.4,.45,.04),GLASS,0,.95,1.115), part(Bx(2.4,.45,.04),GLASS,0,1.9,1.115), part(Bx(3.1,.08,.4),'#C9C2B5',0,1.45,1.25),
+    part(Bx(3.1,.16,2.3),'#BDB5A6',0,2.52,0), part(Bx(1.8,.45,1.1),'#7FA0B8',-.4,2.82,-.4), part(gable(1.9,1.2,.35),'#3F6F9C',-.4,3.05,-.4),
+    part(Cy(.035,.035,3.6,6),'#BDBDBD',1.9,1.8,1.4), part(Bx(.8,.48,.02),'#2F6E3E',2.32,3.35,1.4),
+    part(Bx(1,.65,.06),'#F2EDE2',-1.9,.9,1.45), part(Bx(.05,.9,.05),'#5A4636',-2.35,.45,1.45), part(Bx(.05,.9,.05),'#5A4636',-1.45,.45,1.45) ]);
+}
+function stampGeo(){
+  const lathe=new THREE.LatheGeometry([[0,0],[.42,0],[.42,.08],[.3,.16],[.26,.55],[.34,.75],[.5,.95],[.55,1.15],[.48,1.32],[.3,1.45],[0,1.5]].map(([x,y])=>new THREE.Vector2(x,y)),24);
+  return merge([ part(Bx(1.6,.3,1.6),'#B3322B',0,.15,0), part(Bx(1.7,.42,1.7),'#9C6A43',0,.51,0), part(Bx(1.72,.06,1.72),'#7A5034',0,.73,0),
+    part(Cy(.46,.46,.1,24),'#C9A24A',0,.78,0), part(lathe,'#8A5A3C',0,.8,0) ]);
+}
+
+/* ---------- placement helpers ---------- */
+const occ=new Set(), ok=(x,z)=>`${Math.round(x/1.5)},${Math.round(z/1.5)}`;
+function occupy(x,z,r){ for(let dx=-r;dx<=r;dx+=1.5) for(let dz=-r;dz<=r;dz+=1.5) occ.add(ok(x+dx,z+dz)); }
+const free=(x,z)=>!occ.has(ok(x,z));
+const routeOf=id=>ROUTES.oldstreet.ids.includes(id)?ROUTES.oldstreet.ids:ROUTES.gongguan.ids;
+function frameAt(id){
+  const ids=routeOf(id), i=ids.indexOf(id), a=STATIONS[ids[Math.max(0,i-1)]].pos, b=STATIONS[ids[Math.min(ids.length-1,i+1)]].pos;
+  const t=new V3(b[0]-a[0],0,b[1]-a[1]).normalize(); return {t, side:new V3(-t.z,0,t.x)};
+}
+function place(geo,x,z,faceX,faceZ,m=mat){
+  const mesh=new THREE.Mesh(geo,m); mesh.position.set(x,heightAt(x,z)-.05,z);
+  mesh.rotation.y=Math.atan2(faceX-x,faceZ-z); mesh.castShadow=mesh.receiveShadow=true; scene.add(mesh); return mesh;
+}
+function landmark(id,geo,off,sideSign=1,radius=3,m=mat){
+  const [sx,sz]=STATIONS[id].pos, {side}=frameAt(id), x=sx+side.x*off*sideSign, z=sz+side.z*off*sideSign;
+  place(geo,x,z,sx,sz,m); occupy(x,z,radius);
+}
+landmark('ticket',ticketOffice(),3.6,1,2.5);
+[['hall1',[4.8,3.4,2.4,'vault','#B3322B']],['hall2',[3.6,3,2,'flat','#5C6B48']],['hall3',[4,3.2,2.2,'saw','#2F4B8F']],['hall4',[3.4,3,2.1,'flat','#C9A24A']],['hall5',[4.2,3.2,2.3,'vault','#3D7A4B']]]
+  .forEach(([id,args],k)=>landmark(id,hall(...args),4.6,k%2?-1:1,3.5));
+landmark('tantan',dome(),4.4,1,3.5);
+landmark('farm',farmStation(),5.2,-1,4);
+landmark('church',church(),5,1,4);
+landmark('pipe',pipeSchool(),8.5,1,7,matDS);
+landmark('assoc',association(),4.6,-1,3);
+
+/* old street: a continuous row of arcade shophouses on both sides */
+{
+  const specials={zuoda:shophouse('#B9A88E','#8B2E24','wood'), kue:shophouse('#D8CDBA','#C23B2E','stall'), canteen:shophouse('#C9B79C','#2F6E3E','awning')};
+  for(const id in specials){ const [sx,sz]=STATIONS[id].pos, {side}=frameAt(id); const x=sx+side.x*2.9, z=sz+side.z*2.9; place(specials[id],x,z,sx,sz); occupy(x,z,1.5); }
+  const variants=[['#D8CDBA','#B3322B'],['#C9B79C','#2F4B8F'],['#E2D6C0','#2F6E3E'],['#B9A88E','#C9A24A'],['#D3C3A8','#8B2E24']].map(([w,s],k)=>shophouse(w,s,k%2?'awning':null));
+  const iz=old2.findIndex(p=>Math.hypot(p.x-STATIONS.zuoda.pos[0],p.z-STATIONS.zuoda.pos[1])<1), ic=old2.length-1;
+  const start=Math.max(1,iz-12);
+  const counts=variants.map(()=>[]);
+  let n=0;
+  for(let i=start;i<ic-1;i+=2){
+    const p=old2[i], q=old2[i+1], t=new V3(q.x-p.x,0,q.z-p.z).normalize(), s=new V3(-t.z,0,t.x);
+    for(const sg of [1,-1]){ const x=p.x+s.x*2.9*sg, z=p.z+s.z*2.9*sg;
+      if(!free(x,z) || gradAt(x,z)>.3) continue;
+      counts[n++%variants.length].push([x,z,p.x,p.z]); occupy(x,z,.6); }
+  }
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new V3(0,1,0);
+  counts.forEach((list,k)=>{ if(!list.length) return;
+    const im=new THREE.InstancedMesh(variants[k],mat,list.length); im.castShadow=im.receiveShadow=true;
+    list.forEach(([x,z,fx,fz],j)=>{ q.setFromAxisAngle(up,Math.atan2(fx-x,fz-z)); m.compose(new V3(x,heightAt(x,z)-.05,z),q,new V3(1,1,1)); im.setMatrixAt(j,m); });
+    scene.add(im); });
+}
+
+/* scattered village houses facing the nearest road */
+{
+  const types=[townhouse(2),townhouse(3),brickHouse(),tinShed()], lists=types.map(()=>[]);
+  const tints=['#FFFFFF','#E9E1D2','#DDE3E6','#EFE0CA','#D5D1C8'];
+  const hubs=['ticket','tantan','farm','zuoda','canteen','church','pipe','assoc'];
+  for(const id of hubs){ const [sx,sz]=STATIONS[id].pos;
+    for(let k=0;k<(lite?14:22);k++){
+      const a=rnd()*6.28, r=6+rnd()*14, x=sx+Math.cos(a)*r, z=sz+Math.sin(a)*r;
+      const nr=nearest(x,z); if(nr.d<3.4 || nr.d>16 || gradAt(x,z)>.3 || !free(x,z)) continue;
+      const t=rnd()<.55?(rnd()<.6?0:1):(rnd()<.6?2:3);
+      lists[t].push([x,z,nr.p.x,nr.p.z]); occupy(x,z,1.6);
+    }
+  }
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new V3(0,1,0);
+  lists.forEach((list,k)=>{ if(!list.length) return;
+    const im=new THREE.InstancedMesh(types[k],mat.clone(),list.length); im.castShadow=im.receiveShadow=true;
+    list.forEach(([x,z,fx,fz],j)=>{ q.setFromAxisAngle(up,Math.atan2(fx-x,fz-z)); m.compose(new V3(x,heightAt(x,z)-.05,z),q,new V3(1,1,1)); im.setMatrixAt(j,m); im.setColorAt(j,C(tints[j%tints.length])); });
+    scene.add(im); });
+}
+
+/* ---------- roads, centre lines, route ribbons ---------- */
+function ribbon(pts2,half,lift,material){
+  const n=pts2.length, P=new Float32Array(n*6), idx=[];
+  for(let i=0;i<n;i++){
+    const a=pts2[Math.max(0,i-1)], b=pts2[Math.min(n-1,i+1)];
+    let tx=b.x-a.x, tz=b.z-a.z; const l=Math.hypot(tx,tz)||1; tx/=l; tz/=l;
+    const sx=-tz*half, sz=tx*half, p=pts2[i];
+    const ks=2.1/half, yL=heightAt(p.x+sx*ks,p.z+sz*ks), yR=heightAt(p.x-sx*ks,p.z-sz*ks), yC=heightAt(p.x,p.z), y=Math.max(yL,yR,yC)+lift;
+    P.set([p.x+sx,y,p.z+sz,p.x-sx,y,p.z-sz],i*6);
+    if(i<n-1){const k=i*2; idx.push(k,k+2,k+1,k+1,k+2,k+3);}
+  }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(P,3)); g.setIndex(idx); g.computeVertexNormals();
+  const m=new THREE.Mesh(g,material); m.receiveShadow=true; scene.add(m); return m;
+}
+const asphalt=new THREE.MeshStandardMaterial({color:C('#5F5B57'),roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+const shoulder=new THREE.MeshStandardMaterial({color:C('#A79C86'),roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+for(const pts of [trunk2,old2,gg2]){ ribbon(pts,2.05,.1,shoulder); ribbon(pts,1.55,.14,asphalt); }
+{
+  const dash=new THREE.BoxGeometry(.09,.02,.7), list=[];
+  for(const pts of [trunk2,old2,gg2]) for(let i=1;i<pts.length-1;i+=2){ const a=pts[i-1], b=pts[i+1]; list.push([pts[i],Math.atan2(b.x-a.x,b.z-a.z)]); }
+  const im=new THREE.InstancedMesh(dash,new THREE.MeshStandardMaterial({color:C('#ECE6D6'),roughness:.8}),list.length);
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new V3(0,1,0);
+  list.forEach(([p,a],j)=>{ q.setFromAxisAngle(up,a); m.compose(new V3(p.x,heightAt(p.x,p.z)+.2,p.z),q,new V3(1,1,1)); im.setMatrixAt(j,m); });
+  scene.add(im);
+}
+function routeMat(hex){ return new THREE.MeshStandardMaterial({color:C(hex),emissive:C(hex),emissiveIntensity:.45,roughness:.6,transparent:true,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}); }
+const trunkRib=ribbon(trunk2,.55,.22,routeMat('#B3322B'));
+const oldRib=ribbon(old2,.55,.22,routeMat(ROUTES.oldstreet.hex));
+const ggRib=ribbon(gg2,.55,.22,routeMat(ROUTES.gongguan.hex));
+const setRouteLook=r=>{ trunkRib.material.color.copy(C(ROUTES[r].hex)); trunkRib.material.emissive.copy(C(ROUTES[r].hex)); };
+
+/* utility poles and sagging wires */
+{
+  const poleG=merge([ part(Cy(.06,.09,3.4,7),'#A29D92',0,1.7,0), part(Bx(1.1,.07,.07),'#7E7A72',0,3.15,0), part(Bx(.7,.06,.06),'#7E7A72',0,2.85,0),
+    ...[-.45,0,.45].map(x=>part(Cy(.035,.035,.1,6),'#E8E4DA',x,3.22,0)), part(Cy(.16,.16,.42,10),'#8D9196',.18,2.5,.12) ]);
+  const poles=[];
+  for(const pts of [trunk2,old2,gg2]) for(let i=4;i<pts.length-4;i+=13){
+    const a=pts[i-1], b=pts[i+1], t=new V3(b.x-a.x,0,b.z-a.z).normalize(), s=new V3(-t.z,0,t.x);
+    const x=pts[i].x+s.x*2.6, z=pts[i].z+s.z*2.6; poles.push([x,z,Math.atan2(t.x,t.z),s]);
+  }
+  const im=new THREE.InstancedMesh(poleG,mat,poles.length); im.castShadow=true;
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new V3(0,1,0), wire=[];
+  poles.forEach(([x,z,a],j)=>{ q.setFromAxisAngle(up,a+Math.PI/2); m.compose(new V3(x,heightAt(x,z)-.1,z),q,new V3(1,1,1)); im.setMatrixAt(j,m); });
+  scene.add(im);
+  for(let j=0;j<poles.length-1;j++){
+    const [x1,z1,,s1]=poles[j], [x2,z2,,s2]=poles[j+1]; if(Math.hypot(x2-x1,z2-z1)>16) continue;
+    for(const o of [-.45,0,.45]){
+      const A=new V3(x1+s1.x*o,heightAt(x1,z1)+3.12,z1+s1.z*o), B=new V3(x2+s2.x*o,heightAt(x2,z2)+3.12,z2+s2.z*o);
+      for(let k=0;k<8;k++){ const u0=k/8,u1=(k+1)/8; for(const u of [u0,u1]){ const p=A.clone().lerp(B,u); p.y-=Math.sin(u*Math.PI)*.45; wire.push(p.x,p.y,p.z);} }
+    }
+  }
+  const wg=new THREE.BufferGeometry(); wg.setAttribute('position',new THREE.Float32BufferAttribute(wire,3));
+  scene.add(new THREE.LineSegments(wg,new THREE.LineBasicMaterial({color:C('#3B3A38'),transparent:true,opacity:.7})));
+}
+
+/* paddy fields and orchards on the valley floor */
+{
+  const plots=[], cols=['#7FA34A','#94B856','#6E9440','#A08A62','#C2B062','#86A84C'];
+  for(let x=CX-110;x<CX+110;x+=2.9) for(let z=CZ-110;z<CZ+110;z+=2.9){
+    const jx=x+(noise(x*.3,z*.3))*.3, jz=z+(noise(z*.3,x*.3))*.3, d=distAt(jx,jz);
+    if(d<4.5||d>17||!free(jx,jz)||gradAt(jx,jz)>.12||fbm(jx*.04,jz*.04,2)<-.2) continue;
+    plots.push([jx,jz]); occupy(jx,jz,.5);
+  }
+  const im=new THREE.InstancedMesh(new THREE.BoxGeometry(2.55,.06,2.55),new THREE.MeshStandardMaterial({roughness:.95}),plots.length);
+  im.receiveShadow=true; const m=new THREE.Matrix4(), q=new THREE.Quaternion();
+  plots.forEach(([x,z],j)=>{ m.compose(new V3(x,heightAt(x,z)+.02,z),q,new V3(1,1,1)); im.setMatrixAt(j,m); im.setColorAt(j,C(cols[Math.floor((noise(x*.09,z*.09)*.5+.5)*cols.length)%cols.length])); });
+  scene.add(im);
+}
+
+/* trees */
+{
+  const bl=n=>Math.round(n/3);
+  const kinds=[
+    {geo:broadleaf(1,'#4E6B37'), n:bl(lite?900:1800), test:(x,z,g,d)=>g<.36&&d>4.5&&fbm(x*.05,z*.05,2)>-.18},
+    {geo:broadleaf(5,'#5F7C3D'), n:bl(lite?900:1800), test:(x,z,g,d)=>g<.36&&d>4.5&&fbm(x*.05,z*.05,2)>-.18},
+    {geo:broadleaf(9,'#3E592D'), n:bl(lite?900:1800), test:(x,z,g,d)=>g<.36&&d>4.5&&fbm(x*.05,z*.05,2)>-.18},
+    {geo:betel(), n:lite?300:600, test:(x,z,g,d)=>g<.3&&d>5&&d<40&&noise(x*.06+50,z*.06)>.25},
+    {geo:bamboo(7), n:lite?70:140, test:(x,z,g,d)=>g<.28&&d>4&&d<22&&noise(x*.08-30,z*.08)>.2}
+  ];
+  const m=new THREE.Matrix4(), q=new THREE.Quaternion(), up=new V3(0,1,0), s=new V3(), p=new V3();
+  for(const k of kinds){
+    const im=new THREE.InstancedMesh(k.geo,mat.clone(),k.n); im.castShadow=im.receiveShadow=true; let n=0;
+    for(let tries=0;tries<k.n*14&&n<k.n;tries++){
+      const x=CX-SIZE/2+10+rnd()*(SIZE-20), z=CZ-SIZE/2+10+rnd()*(SIZE-20);
+      if(!free(x,z)) continue; const g=gradAt(x,z), d=distAt(x,z); if(!k.test(x,z,g,d)) continue;
+      const sc=.75+rnd()*.6; p.set(x,heightAt(x,z)-.15,z); s.set(sc,sc*(.9+rnd()*.25),sc); q.setFromAxisAngle(up,rnd()*6.28);
+      m.compose(p,q,s); im.setMatrixAt(n,m); n++;
+    }
+    im.count=n; scene.add(im);
+  }
+}
+
+/* ---------- stamps: one per station, they press down and leave an imprint ---------- */
+function imprintTexture(num){
+  const S=256, cv=document.createElement('canvas'); cv.width=cv.height=S; const x=cv.getContext('2d'), r=mulberry(num*97);
+  x.fillStyle='#B3322B'; x.strokeStyle='#B3322B'; x.lineWidth=18; x.strokeRect(22,22,S-44,S-44);
+  x.lineWidth=5; x.strokeRect(46,46,S-92,S-92);
+  x.font='900 120px "Noto Serif TC", serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(String(num),S/2,S/2+6);
+  x.globalCompositeOperation='destination-out';
+  for(let i=0;i<900;i++){ x.globalAlpha=.25+r()*.6; x.beginPath(); x.arc(r()*S,r()*S,.6+r()*2.4,0,6.28); x.fill(); }
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; t.anisotropy=8; return t;
+}
+const sGeo=stampGeo();
+const pins={};
+for(const id in STATIONS){
+  const [x,z]=STATIONS[id].pos, y=heightAt(x,z)+.24, num=routeOf(id).indexOf(id)+1;
+  const group=new THREE.Group(); group.position.set(x,y,z);
+  const stamp=new THREE.Mesh(sGeo,mat); stamp.castShadow=true; stamp.position.y=4.2; group.add(stamp);
+  const imp=new THREE.Mesh(new THREE.PlaneGeometry(1.75,1.75),new THREE.MeshStandardMaterial({map:imprintTexture(num),transparent:true,opacity:0,depthWrite:false,roughness:.9,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}));
+  imp.rotation.x=-Math.PI/2; imp.position.y=.02; group.add(imp);
+  scene.add(group);
+  pins[id]={group, stamp, imp, base:new V3(x,y,z), top:new V3(x,y+6.2,z), press:-1, stamped:false};
+}
+
+/* cloud sea */
+function cloudTexture(seed){
+  const cv=document.createElement('canvas'); cv.width=cv.height=256; const ctx=cv.getContext('2d'), img=ctx.createImageData(256,256);
+  for(let y=0;y<256;y++)for(let x=0;x<256;x++){
+    const a=x/256*Math.PI*2, b=y/256*Math.PI*2, nx=Math.cos(a)*1.6+seed, ny=Math.sin(a)*1.6, nz=Math.cos(b)*1.6, nw=Math.sin(b)*1.6;
+    let v=fbm(nx+nz*.7,ny+nw*.7,5)*.5+fbm(nx*.6-nw,nz*.6+ny,4)*.5; v=THREE.MathUtils.smoothstep(v,-.32,.22);
+    const i=(y*256+x)*4; img.data[i]=img.data[i+1]=img.data[i+2]=255; img.data[i+3]=v*255;
+  }
+  ctx.putImageData(img,0,0);
+  const t=new THREE.CanvasTexture(cv); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(3,3); t.encoding=THREE.sRGBEncoding; return t;
+}
+const clouds=[];
+[[6.2,0],[8.4,7.3]].forEach(([y,seed],i)=>{
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(700,700),new THREE.MeshBasicMaterial({map:cloudTexture(seed),transparent:true,depthWrite:false,color:C(i?'#FFF8EE':'#F2EAE0'),fog:true}));
+  m.rotation.x=-Math.PI/2; m.position.set(CX,y,CZ); m.renderOrder=2; scene.add(m); clouds.push(m);
+});
+
+/* ---------- HTML labels ---------- */
+const labelsEl=document.getElementById('labels'), labels={};
+for(const id in STATIONS){
+  const el=document.createElement('div'); el.className='pin';
+  el.innerHTML='<span class="n"></span><span class="t"></span>'; el.querySelector('.t').textContent=STATIONS[id].name;
+  labelsEl.appendChild(el); labels[id]=el;
+}
+
+/* ---------- route state & station sections ---------- */
+let route='oldstreet';
+const params=new URLSearchParams(location.search), hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
+const arrival = params.get('s') || hashParams.get('s');
+if(arrival && ['zuoda','kue','canteen'].includes(arrival)) route='oldstreet';
+if(arrival && ['church','pipe','assoc'].includes(arrival)) route='gongguan';
+
+const stationsEl=document.getElementById('stations');
+function numberIn(r,id){ return ROUTES[r].ids.indexOf(id)+1; }
+function routeTag(id){
+  return SHARED.includes(id) ? '兩條路線共同站' : ROUTES[route].name;
+}
+function buildStations(){
+  stationsEl.innerHTML='';
+  ROUTES[route].ids.forEach((id,i)=>{
+    const s=STATIONS[id], sec=document.createElement('section');
+    sec.className='station'+(i%2?'':' r'); sec.dataset.cam='st:'+id; sec.id='st-'+id;
+    const tagColor = SHARED.includes(id)?'var(--seal)':`var(${ROUTES[route].cssVar})`;
+    sec.innerHTML=`<div class="panel">
+      <div class="head"><div class="seal">${i+1}</div><div><div class="tag" style="color:${tagColor}"></div><h2></h2></div></div>
+      <p class="desc"></p>
+      <p class="tip">在這站蓋上第 ${i+1} 個疊印印章。${i===10?'這裡也是寄出時光明信片的地方。':''}</p></div>`;
+    sec.querySelector('.tag').textContent = `${ROUTES[route].name} 第 ${i+1} 站・${routeTag(id)}`;
+    sec.querySelector('h2').textContent = s.name;
+    const d=sec.querySelector('.desc'); d.textContent=s.desc;
+    if(s.todo){const t=document.createElement('span'); t.className='todo'; t.textContent='待補'; d.appendChild(t);}
+    stationsEl.appendChild(sec);
+  });
+  for(const id in labels) labels[id].querySelector('.n').textContent = ROUTES[route].ids.includes(id) ? numberIn(route,id) : '';
+  measure();
+}
+function setRoute(r, keepPlace){
+  if(r===route && stationsEl.children.length) return;
+  const anchor = keepPlace ? currentSection() : null;
+  route=r;
+  document.querySelectorAll('[data-r]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.r===r));
+  setRouteLook(r);
+  buildStations();
+  if(anchor && anchor.startsWith('st:')){
+    const id=anchor.slice(3), el=document.getElementById('st-'+id) || document.getElementById('st-farm');
+    if(el) window.scrollTo({top: el.offsetTop + el.offsetHeight/2 - innerHeight/2});
+  }
+}
+document.querySelectorAll('[data-r]').forEach(b=>b.addEventListener('click',()=>setRoute(b.dataset.r,true)));
+
+/* ---------- camera keyframes ---------- */
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const fixedCams={
+  hero:{pos:V(-140,30,140), look:V(-20,10,10)},
+  how:{pos:V(-110,40,100), look:V(-30,3,25)},
+  overview:{pos:V(-8,150,95), look:V(-12,0,14)},
+};
+function stationCam(id){
+  const ids=ROUTES[route].ids, i=ids.indexOf(id), p=pins[id].base;
+  const a=pins[ids[Math.max(0,i-1)]].base, b=pins[ids[Math.min(ids.length-1,i+1)]].base;
+  const tan=b.clone().sub(a).setY(0); if(tan.lengthSq()<1e-3) tan.set(1,0,0); tan.normalize();
+  const side=new THREE.Vector3(-tan.z,0,tan.x).multiplyScalar(i%2?-1:1);
+  const close = i>=1&&i<=5;                            // the five halls sit close together
+  const pos=p.clone().addScaledVector(side, close?20:30).addScaledVector(tan, close?-12:-20); pos.y = p.y + (close?15:22);
+  const portrait = innerWidth<innerHeight;
+  if(innerHeight<500 && !portrait){ pos.sub(p).multiplyScalar(1.2).add(p); }
+  // shift the station away from the panel: panels sit left on even stations, right on odd ones
+  const shift = portrait ? 0 : (i%2 ? -1 : 1) * (close?6:9);
+  const right = new THREE.Vector3().subVectors(p,pos).setY(0).normalize(); right.set(-right.z,0,right.x);
+  const look = p.clone().add(V(0, portrait?-7:2, 0)).addScaledVector(right, shift);
+  return {pos:pos.addScaledVector(right, shift), look};
+}
+function endCam(){ const id=ROUTES[route].ids[10], p=pins[id].base; return {pos:p.clone().add(V(-40,45,55)), look:p.clone().add(V(-10,0,0))}; }
+function camFor(key){
+  if(key.startsWith('st:')) return stationCam(key.slice(3));
+  if(key==='end') return endCam();
+  return fixedCams[key];
+}
+
+let sections=[], centers=[];
+function measure(){
+  sections=[...document.querySelectorAll('main section')];
+  centers=sections.map(s=>s.offsetTop+s.offsetHeight/2);
+}
+function scrollState(){
+  const c=scrollY+innerHeight/2;
+  if(c<=centers[0]) return [0,0];
+  for(let i=0;i<centers.length-1;i++) if(c<centers[i+1]) return [i,(c-centers[i])/(centers[i+1]-centers[i])];
+  return [centers.length-1,0];
+}
+function currentSection(){ const [i,f]=scrollState(); return sections[Math.min(sections.length-1, f>.5?i+1:i)].dataset.cam; }
+
+function resize(){
+  const w=innerWidth,h=innerHeight; renderer.setSize(w,h,false);
+  camera.aspect=w/h; camera.fov = w<h?62:45; camera.updateProjectionMatrix(); measure();
+}
+addEventListener('resize',resize);
+const headerEl=document.querySelector('header');
+function onScroll(){ headerEl.classList.toggle('solid', scrollY>innerHeight*.5); }
+addEventListener('scroll',onScroll,{passive:true});
+
+/* ---------- loop ---------- */
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const camPos=new THREE.Vector3(), camLook=new THREE.Vector3(), tP=new THREE.Vector3(), tL=new THREE.Vector3(), v=new THREE.Vector3();
+let first=true, last=performance.now(), time=0;
+function frame(now){
+  const dt=Math.min((now-last)/1000,.05); last=now; time+=dt;
+  const [i,fr]=scrollState(), f=ease(fr);
+  const A=camFor(sections[i].dataset.cam), B=camFor(sections[Math.min(i+1,sections.length-1)].dataset.cam);
+  tP.lerpVectors(A.pos,B.pos,f); tL.lerpVectors(A.look,B.look,f);
+  tP.y += Math.sin(f*Math.PI)*Math.min(40, A.pos.distanceTo(B.pos)*.22);   // arc over ridges between stops
+  if(!reduce){ tP.x += Math.sin(time*.25)*1.2; tP.y += Math.sin(time*.31)*.6; }
+  if(first){camPos.copy(tP); camLook.copy(tL); first=false;}
+  const k = reduce ? 1 : 1-Math.pow(.002,dt);
+  camPos.lerp(tP,k); camLook.lerp(tL,k);
+  camera.position.copy(camPos); camera.lookAt(camLook);
+  sun.target.position.copy(camLook); sun.position.copy(camLook).add(sunOffset); sun.target.updateMatrixWorld();
+
+  // clouds clear as you descend from the hero
+  const p = i + fr, cloudW = 1-THREE.MathUtils.smoothstep(p,.35,1.6);
+  clouds.forEach((c,n)=>{ c.material.opacity = cloudW*(n?.85:.95); c.visible = cloudW>.01;
+    if(!reduce){ c.material.map.offset.x += dt*(n?.004:.0025); c.material.map.offset.y += dt*.0012; } });
+
+  // route emphasis
+  oldRib.material.opacity = route==='oldstreet'?1:.18; ggRib.material.opacity = route==='gongguan'?1:.18;
+
+  // pins & labels
+  const focusKey = currentSection(), focus = focusKey.startsWith('st:') ? focusKey.slice(3) : null;
+  const ids = ROUTES[route].ids, w=innerWidth, h=innerHeight;
+  for(const id in pins){
+    const on = ids.includes(id), pin=pins[id];
+    pin.group.visible = on;
+    if(id===focus && pin.press<0 && !pin.done){ pin.press = 0; pin.done = true; }
+    if(id!==focus) pin.done = false;
+    let sy = 4.2 + (reduce?0:Math.sin(time*1.6+pin.base.x)*.18);
+    if(pin.press>=0){
+      pin.press += dt/1.5; const t=pin.press;
+      const down = t<.35 ? ease(t/.35) : t<.5 ? 1 : 1-ease((t-.5)/.5);
+      sy = sy*(1-down);
+      if(t>=.35) pin.stamped = true;
+      if(t>=1) pin.press = -1;
+    }
+    if(reduce && id===focus) pin.stamped = true;
+    pin.stamp.position.y = sy;
+    pin.stamp.rotation.y += reduce?0:dt*.25;
+    const ts = id===focus?1.25:1; pin.stamp.scale.lerp(v.set(ts,ts,ts), Math.min(1,dt*5));
+    pin.imp.material.opacity += ((pin.stamped?.95:0) - pin.imp.material.opacity)*Math.min(1,dt*8);
+    const el=labels[id];
+    if(!on || cloudW>.5){ el.style.opacity=0; continue; }
+    v.copy(pin.top).project(camera);
+    if(v.z>1){ el.style.opacity=0; continue; }
+    el.style.opacity=1;
+    el.style.transform=`translate(${(v.x*.5+.5)*w}px,${(-v.y*.5+.5)*h}px) translate(-50%,-100%)`;
+    el.classList.toggle('focus', id===focus);
+  }
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- QR arrival sheet ---------- */
+const wrap=document.getElementById('sheetWrap'), sheet=document.getElementById('sheet');
+function openSheet(id){
+  const s=STATIONS[id]; if(!s) return;
+  const inRoutes = Object.keys(ROUTES).filter(r=>ROUTES[r].ids.includes(id));
+  const where = inRoutes.map(r=>`${ROUTES[r].name}第 ${numberIn(r,id)} 站`).join('、');
+  const ids=ROUTES[route].ids, i=ids.indexOf(id), nextId=ids[i+1];
+  let next='';
+  if(id==='farm') next=`下一站：老街線往${STATIONS.zuoda.name}，公舘社區線往${STATIONS.church.name}。`;
+  else if(nextId) next=`下一站：${STATIONS[nextId].name}`;
+  else next='這是最後一站，記得寄出你的時光明信片。';
+  sheet.innerHTML=`<div class="here">你現在在：${where}</div>
+    <div class="head" style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><div class="seal">${numberIn(route,id)}</div><h2 id="sheetTitle" style="margin:0"></h2></div>
+    <p class="desc"></p>
+    <p class="tip">在這站蓋上疊印印章，章會疊在前面幾站的圖案上。</p>
+    <p class="next"></p>
+    <div class="actions"><button class="primary" id="goMap">在 3D 地圖上看這站</button><button class="ghost" id="close">關閉</button></div>`;
+  sheet.querySelector('h2').textContent=s.name;
+  const d=sheet.querySelector('.desc'); d.textContent=s.desc;
+  if(s.todo){const t=document.createElement('span'); t.className='todo'; t.textContent='待補'; d.appendChild(t);}
+  sheet.querySelector('.next').textContent=next;
+  wrap.classList.add('open');
+  const close=()=>wrap.classList.remove('open');
+  sheet.querySelector('#close').onclick=close;
+  sheet.querySelector('#goMap').onclick=()=>{ close(); const el=document.getElementById('st-'+id);
+    if(el) window.scrollTo({top:el.offsetTop+el.offsetHeight/2-innerHeight/2, behavior:reduce?'auto':'smooth'}); };
+  wrap.onclick=e=>{ if(e.target===wrap) close(); };
+  sheet.querySelector('#goMap').focus();
+}
+addEventListener('keydown',e=>{ if(e.key==='Escape') wrap.classList.remove('open'); });
+
+/* ---------- start ---------- */
+document.querySelectorAll('[data-r]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.r===route));
+setRouteLook(route);
+buildStations(); resize(); onScroll();
+if(arrival && STATIONS[arrival]){
+  const el=document.getElementById('st-'+arrival);
+  if(el) window.scrollTo({top:el.offsetTop+el.offsetHeight/2-innerHeight/2});
+  openSheet(arrival);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
