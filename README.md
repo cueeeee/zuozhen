@@ -1,26 +1,38 @@
-# 左羅紀公園｜左鎮疊印路線
+# Zuoluoji Park (左羅紀公園) | Zuozhen Layered-Stamp Trail
 
-台南左鎮的親子闖關旅遊網站。2026 創見南方「惡地童遊」命題第一名作品。
+An interactive family travel guide for Zuozhen District, Tainan, Taiwan.
+First-place winner of the 2026 Chuang-Jian Nanfang (創見南方) competition, "Badlands Play for Kids" (惡地童遊) track.
 
-🔗 網站：https://cueeeee.github.io/zuozhen/
+🔗 Live site: https://cueeeee.github.io/zuozhen/
 
-## 這是什麼
+## What it is
 
-旅客沿著兩條路線（老街線、公舘社區線）走訪左鎮 14 個站，每站蓋一個疊印印章，最後疊出一張完整的左鎮圖。
-這個網站是現場的導覽：
+Visitors follow one of two routes (Old Street Route / Gongguan Community Route) through 14 stations in Zuozhen. At each station they press a layered stamp onto the same card, and the stamps stack up into one complete picture of Zuozhen.
+This website is the on-site companion:
 
-- **3D 地圖**：依 Google 地圖實際位置，用 three.js 程式生成左鎮惡地地形、道路、河流和每一站的建築；化石園區五個展館有室內場景。
-- **QR code 漸進解鎖**：每站的 QR 網址是 `?s=站代號`，掃了只看得到走到這裡為止的站，答對題目才解鎖下一站。
-- **單一 HTML 檔**：不需要 build，直接用 GitHub Pages 提供。
+- **3D map**: Built with three.js. The badlands terrain, roads, river and every station's building are procedurally generated and placed according to real Google Maps positions. The five halls of the Zuozhen Fossil Park have indoor scenes.
+- **Progressive unlock via QR codes**: Each station's QR code opens `?s=<stationId>`. Visitors only see stations up to the one they've reached, and answering a quiz question unlocks the next one.
+- **Single HTML file**: No build step. Served directly by GitHub Pages.
 
-## 給 AI 的開發規則
+## Project structure
 
-請看 [`CLAUDE.md`](./CLAUDE.md)（`AGENTS.md` 指向同一份）。裡面寫了：專案目的、檔案結構與命名、`index.html` 的分區、網頁風格、新增站點／子頁面的格式，以及 AI 修改時必須遵守的規則。
+```
+zuozhen/
+├── index.html   Main page: 3D guide + all stations (HTML, CSS and JS in one file)
+├── about.html   Static "About the project" page (example of adding a sub-page)
+├── CLAUDE.md    Development rules for AI agents
+├── AGENTS.md    Points to CLAUDE.md
+└── README.md    This file
+```
 
-## 本機預覽
+## Rules for AI agents
+
+See [`CLAUDE.md`](./CLAUDE.md) (`AGENTS.md` points to the same file). It covers the project's purpose, file naming and placement, where each part of `index.html` lives, the visual style, the format for adding new stations or sub-pages, and the rules an AI must follow when making changes.
+
+## Local preview
 
 ```bash
 python3 -m http.server 8000
 ```
 
-打開 http://localhost:8000/
+Then open http://localhost:8000/
