@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>關於企劃｜左羅紀公園</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* 與 index.html 同一組變數（見 CLAUDE.md 第 4 節），不要另外新增色碼 */
+:root{
+  --paper:rgba(250,246,238,.9); --paper-solid:#FAF6EE;
+  --ink:#2A2925; --muted:#5E5A50; --line:rgba(42,41,37,.16);
+  --seal:#B3322B; --old:#2F4B8F; --gg:#3D7A4B;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:rgba(30,30,28,.88); --paper-solid:#1E1E1C;
+    --ink:#F1ECE1; --muted:#BDB6A7; --line:rgba(241,236,225,.18);
+    --seal:#D9534A; --old:#7F9BE0; --gg:#7DBB8B;
+  }
+  body{background:linear-gradient(180deg,#26303A 0%,#2B2B29 50%,#2E2820 100%) fixed}
+}
+*,*::before,*::after{box-sizing:border-box}
+html{min-height:100%; background:#EBD7BC}
+body{
+  margin:0; color:var(--ink);
+  background:linear-gradient(180deg,#8FA9C0 0%,#C9CED0 45%,#EBD7BC 100%) fixed;
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  line-height:1.7; -webkit-font-smoothing:antialiased;
+}
+header{
+  position:sticky; top:0; z-index:5;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) clamp(14px,4vw,40px) 12px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.brand{font-family:"Noto Serif TC",serif; font-weight:900; font-size:19px; letter-spacing:.12em;
+  display:flex; align-items:center; gap:8px; color:var(--ink); text-decoration:none}
+.brand i{display:inline-grid; place-items:center; width:26px; height:26px; border:2px solid var(--seal); color:var(--seal);
+  font-style:normal; font-size:13px; border-radius:3px; background:var(--paper-solid)}
+.back{font-size:14px; font-weight:700; color:var(--ink); text-decoration:none; background:var(--paper);
+  border:1px solid var(--line); border-radius:999px; padding:6px 14px}
+.back:focus-visible,.brand:focus-visible{outline:3px solid var(--seal); outline-offset:2px}
+main{max-width:46rem; margin:0 auto; padding:6vh clamp(16px,5vw,40px) 12vh; display:grid; gap:22px}
+.panel{background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:24px 26px 26px;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 12px 40px rgba(40,30,20,.12)}
+h1,h2{font-family:"Noto Serif TC","Songti TC",serif; margin:0; line-height:1.3}
+h1{font-size:clamp(36px,7vw,64px); font-weight:900; letter-spacing:.06em}
+h2{font-size:clamp(22px,3vw,28px); font-weight:900; margin-bottom:10px; display:flex; align-items:center; gap:10px}
+h2 .seal{width:32px; height:32px; display:inline-grid; place-items:center; border:2px solid var(--seal); color:var(--seal);
+  border-radius:3px; font-size:15px}
+p,li{color:var(--muted); font-size:16px}
+p{margin:0} p+p{margin-top:10px}
+.lead{color:var(--ink); font-size:clamp(17px,2vw,20px); margin-top:10px}
+.badge{display:inline-block; margin-top:14px; padding:4px 12px; border:2px solid var(--seal); color:var(--seal);
+  font-family:"Noto Serif TC",serif; font-weight:900; border-radius:3px; transform:rotate(-3deg)}
+ul{margin:8px 0 0; padding-left:1.2em}
+.routes{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
+.route{border:2px solid var(--line); border-radius:6px; padding:12px 14px}
+.route b{display:block; color:var(--ink)}
+.route.old{border-color:var(--old)} .route.old b{color:var(--old)}
+.route.gg{border-color:var(--gg)} .route.gg b{color:var(--gg)}
+.route small{color:var(--muted); font-size:14px}
+.cta{display:inline-block; margin-top:16px; background:var(--seal); color:#fff; font-weight:700; text-decoration:none;
+  padding:11px 18px; border-radius:6px}
+@media (max-width:480px){ .routes{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="./"><i>左</i><span>左羅紀公園</span></a>
+  <a class="back" href="./">← 回到導覽</a>
+</header>
+
+<main>
+  <section class="panel">
+    <h1>關於這個企劃</h1>
+    <p class="lead">把左鎮的惡地、化石和老街，變成一張可以一站一站「疊」出來的地圖。</p>
+    <span class="badge">2026 創見南方・惡地童遊　第一名</span>
+  </section>
+
+  <section class="panel">
+    <h2><span class="seal">一</span>為什麼是左鎮</h2>
+    <p>左鎮是台灣化石最多的地方之一，有白堊土的惡地地形，也有西拉雅文化和百年教會。</p>
+    <p>但它離市區遠，來的人常常只逛化石園區就離開。我們想讓親子旅客多走幾站，認識整個左鎮。</p>
+  </section>
+
+  <section class="panel">
+    <h2><span class="seal">二</span>怎麼玩</h2>
+    <ul>
+      <li>在旅遊售票處拿地圖和遮色闖關卡。</li>
+      <li>解謎找到每一站，蓋一個疊印印章；章會一層一層疊成一張完整的圖。</li>
+      <li>每站都有 QR code，掃了可以看介紹、回答問題、解鎖下一站。</li>
+      <li>最後一站寄一張時光明信片給未來的自己。</li>
+    </ul>
+    <div class="routes">
+      <div class="route old"><b>老街線</b><small>左達商號、鹹粿、左食堂</small></div>
+      <div class="route gg"><b>公舘社區線</b><small>岡林教會、水管屋、發展協會</small></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="seal">三</span>這個網站</h2>
+    <p>首頁是一張用程式生成的 3D 左鎮地圖：地形、道路、河流和每一站的建築，都依照實際位置擺放。化石園區的五個展館也做了室內場景。</p>
+    <p>網站的內容和格式規則寫在 repo 的 <code>CLAUDE.md</code>，之後新增站點或頁面，AI 照著規則就能接著做。</p>
+    <a class="cta" href="./">打開 3D 導覽</a>
+  </section>
+</main>
+
+</body>
+</html>
